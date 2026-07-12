@@ -52,10 +52,19 @@ router.get('/cycles/:id/discrepancy-report',
   ctrl.getDiscrepancyReport
 );
 
+// Active cycle for UI screen
+router.get('/active', ctrl.getActiveCycle);
+
 // Mark audit item — any assigned auditor (checked in service)
 router.patch('/items/:id',
   validateRequest(updateItemSchema),
   ctrl.updateItem
 );
+
+// Verify item by assetId within audit cycle
+router.patch('/:auditId/items/:assetId', ctrl.updateItemByAssetId);
+
+// Direct close cycle
+router.post('/:id/close', authorize(ROLES.ASSET_MANAGER), ctrl.closeCycle);
 
 module.exports = router;

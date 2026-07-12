@@ -58,8 +58,15 @@ const getMaintenanceHistory = async (req, res, next) => {
   } catch (e) { next(e); }
 };
 
+const listRequests = async (req, res, next) => {
+  try {
+    const result = await maintService.listRequests(req.query.status);
+    return successResponse(res, result);
+  } catch (e) { next(e); }
+};
+
 module.exports = {
   createRequest, approveRequest, rejectRequest,
   assignTechnician, startWork, resolveRequest,
-  getMaintenanceHistory,
+  getMaintenanceHistory, listRequests,
 };

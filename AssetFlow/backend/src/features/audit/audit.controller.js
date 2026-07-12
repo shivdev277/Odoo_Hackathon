@@ -53,4 +53,18 @@ const getDiscrepancyReport = async (req, res, next) => {
   } catch (e) { next(e); }
 };
 
-module.exports = { createCycle, addAuditors, getItems, updateItem, closeCycle, getDiscrepancyReport };
+const getActiveCycle = async (req, res, next) => {
+  try {
+    const cycle = await auditService.getActiveCycle();
+    return successResponse(res, cycle);
+  } catch (e) { next(e); }
+};
+
+const updateItemByAssetId = async (req, res, next) => {
+  try {
+    const item = await auditService.updateItemByAssetId(req.params.auditId, req.params.assetId, req.body.verification || req.body.result, req.user);
+    return successResponse(res, item);
+  } catch (e) { next(e); }
+};
+
+module.exports = { createCycle, addAuditors, getItems, updateItem, closeCycle, getDiscrepancyReport, getActiveCycle, updateItemByAssetId };

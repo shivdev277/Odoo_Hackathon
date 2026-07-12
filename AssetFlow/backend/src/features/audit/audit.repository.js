@@ -163,9 +163,50 @@ async function findDiscrepanciesByCycleId(cycleId) {
   return rows;
 }
 
+async function findActiveCycleWithDetails() {
+  const { rows: cycles } = await query(
+    `SELECT ac.*, d.name AS scope_department_name
+     FROM audit_cycles ac
+     LEFT JOIN departments d ON ac.scope_department_id = d.id
+     WHERE ac.status IN ('in_progress', 'planned')
+     ORDER BY ac.created_at DESC
+     LIMIT 1`
+  );
+  if (cycles.length === 0) return null;
+  const cycle = cycles[0];
+
+  const { rows: auditors } = await query(
+    `SELECT u.name FROM audit_cycle_auditors aca
+     JOIN users u ON aca.auditor_id = u.id
+     WHERE aca.audit_cycle_id = $1`,
+    [cycle.id]
+  );
+  cycle.auditor_names = auditors.map((a) => a.name);
+
+  const { rows: items } = await query(
+    `SELECT ai.*, a.asset_tag, a.name AS asset_name, a.location AS expected_location
+     FROM audit_items ai
+     JOIN assets a ON ai.asset_id = a.id
+     WHERE ai.audit_cycle_id = $1
+     ORDER BY a.asset_tag ASC`,
+    [cycle.id]
+  );
+  cycle.items = items;
+  return cycle;
+}
+
+async function findItemByCycleAndAsset(cycleId, assetId) {
+  const { rows } = await query(
+    `SELECT * FROM audit_items WHERE audit_cycle_id = $1 AND asset_id = $2`,
+    [cycleId, assetId]
+  );
+  return rows[0] || null;
+}
+
 module.exports = {
   createCycle, findCycleById, updateCycleStatus, atomicClose,
   addAuditors, isAuditor,
   createItems, findItemsByCycleId, findItemById, updateItemResult, findDiscrepantItems,
   createDiscrepancyReport, findDiscrepanciesByCycleId,
+  findActiveCycleWithDetails, findItemByCycleAndAsset,
 };

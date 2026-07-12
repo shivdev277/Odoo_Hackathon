@@ -35,7 +35,7 @@ export default function MaintenanceScreen() {
   useEffect(load, [activeTab]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-[#061E29]">Maintenance Management</h1>
       </div>

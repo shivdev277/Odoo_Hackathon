@@ -170,8 +170,16 @@ async function getMaintenanceHistory(assetId, limit, offset) {
   return maintRepo.findByAssetId(assetId, limit, offset);
 }
 
+async function listRequests(status) {
+  const [items, counts] = await Promise.all([
+    maintRepo.findAll(status),
+    maintRepo.getCountsByStatus(),
+  ]);
+  return { items, counts };
+}
+
 module.exports = {
   createRequest, approveRequest, rejectRequest,
   assignTechnician, startWork, resolveRequest,
-  getMaintenanceHistory,
+  getMaintenanceHistory, listRequests,
 };

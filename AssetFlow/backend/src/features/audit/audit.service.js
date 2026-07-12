@@ -147,6 +147,24 @@ async function getDiscrepancyReport(cycleId) {
   return { cycle, discrepancies };
 }
 
+async function getActiveCycle() {
+  return auditRepo.findActiveCycleWithDetails();
+}
+
+async function updateItemByAssetId(cycleId, assetId, result, user) {
+  const item = await auditRepo.findItemByCycleAndAsset(cycleId, assetId);
+  if (!item) {
+    // If item doesn't exist yet for this cycle, create it first
+    const created = await auditRepo.createItems(cycleId, [assetId]);
+    if (created && created.length > 0) {
+      return updateItem(created[0].id, { result }, user);
+    }
+    throw new NotFoundError('Audit item not found for this asset in the active cycle');
+  }
+  return updateItem(item.id, { result }, user);
+}
+
 module.exports = {
   createCycle, addAuditors, getItems, updateItem, closeCycle, getDiscrepancyReport,
+  getActiveCycle, updateItemByAssetId,
 };

@@ -90,4 +90,47 @@ async function findByAssetId(assetId, limit, offset) {
   return { rows, total };
 }
 
-module.exports = { create, findById, findActiveByAssetId, updateStatus, findByAssetId };
+async function findAll(status) {
+  const conditions = [];
+  const values = [];
+  if (status && status !== 'all') {
+    conditions.push('mr.status = $1');
+    values.push(status);
+  }
+  const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+  const { rows } = await query(
+    `SELECT mr.*, a.asset_tag, a.name AS asset_name, d.name AS department_name,
+            u.name AS raised_by_name
+     FROM maintenance_requests mr
+     LEFT JOIN assets a ON mr.asset_id = a.id
+     LEFT JOIN departments d ON a.department_id = d.id
+     LEFT JOIN users u ON mr.raised_by = u.id
+     ${whereClause}
+     ORDER BY mr.created_at DESC`,
+    values
+  );
+  return rows;
+}
+
+async function getCountsByStatus() {
+  const { rows } = await query(
+    `SELECT status, COUNT(*)::int AS count
+     FROM maintenance_requests
+     GROUP BY status`
+  );
+  const counts = {
+    pending: 0,
+    approved: 0,
+    technician_assigned: 0,
+    in_progress: 0,
+    resolved: 0,
+  };
+  for (const r of rows) {
+    if (counts[r.status] !== undefined) {
+      counts[r.status] = r.count;
+    }
+  }
+  return counts;
+}
+
+module.exports = { create, findById, findActiveByAssetId, updateStatus, findByAssetId, findAll, getCountsByStatus };

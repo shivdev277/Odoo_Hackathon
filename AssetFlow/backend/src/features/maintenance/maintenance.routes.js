@@ -23,7 +23,8 @@ const { ROLES } = require('../../shared/roles');
 
 router.use(authenticate);
 
-// Any authenticated user can raise a maintenance request
+// Any authenticated user can list/raise maintenance requests
+router.get('/', ctrl.listRequests);
 router.post('/', validateRequest(createMaintenanceSchema), ctrl.createRequest);
 
 // Approve/reject — Asset Manager only
