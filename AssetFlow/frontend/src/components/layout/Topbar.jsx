@@ -51,13 +51,13 @@ export default function Topbar() {
         const notifications = res.data?.data ?? res.data;
         if (!cancelled) setUnreadCount(Array.isArray(notifications) ? notifications.length : 0);
       })
-      .catch(() => {}); // silent - the bell just shows 0 if this fails, non-critical
+      .catch(() => { }); // silent - the bell just shows 0 if this fails, non-critical
     return () => { cancelled = true; };
   }, []);
 
   return (
-    <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6">
-      <div className="relative w-full max-w-md">
+    <header className="flex h-16 items-center justify-end border-b border-gray-200 bg-white px-6">
+      {/* <div className="relative w-full max-w-md">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
         <input
           type="text"
@@ -67,7 +67,7 @@ export default function Topbar() {
         <kbd className="absolute right-3 top-1/2 -translate-y-1/2 rounded border border-gray-300 bg-white px-1.5 py-0.5 text-[10px] text-gray-400">
           ⌘K
         </kbd>
-      </div>
+      </div> */}
 
       <div className="flex items-center gap-4">
         <button
