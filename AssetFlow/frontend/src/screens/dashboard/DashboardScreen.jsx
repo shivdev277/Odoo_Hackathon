@@ -45,11 +45,11 @@ export default function DashboardScreen() {
       dashboardApi.getOverdue(),
       dashboardApi.getRecentActivity(),
     ])
-      .then(([kpisRes, overdueRes, activityRes]) => {
+      .then(([kpisData, overdueData, activityData]) => {
         if (cancelled) return;
-        setKpis(kpisRes.data);
-        setOverdue(overdueRes.data);
-        setActivity(activityRes.data || []);
+        setKpis(kpisData);
+        setOverdue(overdueData);
+        setActivity(activityData || []);
       })
       .catch((err) => {
         if (!cancelled) setError(err.message || 'Could not load dashboard data. Please refresh the page.');

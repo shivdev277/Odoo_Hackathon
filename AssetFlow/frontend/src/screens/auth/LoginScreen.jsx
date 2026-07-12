@@ -18,7 +18,12 @@ export default function LoginScreen() {
     setError('');
     setSubmitting(true);
     try {
-      await login(form);
+      const authResult = await login(form);
+
+      if (!authResult?.user) {
+        throw new Error('Login failed. Please check your credentials and try again.');
+      }
+
       navigate('/dashboard');
     } catch (err) {
       setError(err.message || 'Invalid email or password. Please try again.');
