@@ -24,8 +24,15 @@ export const login = async (credentials) => {
 };
 
 export const register = async (userData) => {
-  const response = await apiClient.post('/auth/register', userData);
-  return unwrapData(response);
+  try {
+    const response = await apiClient.post('/auth/register', userData);
+    return unwrapData(response);
+  } catch (error) {
+    const parsedError = new Error(getErrorMessage(error, 'Unable to create your account right now.'));
+    parsedError.statusCode = error?.response?.status;
+    parsedError.isNetworkError = !error?.response;
+    throw parsedError;
+  }
 };
 
 export const getProfile = async () => {

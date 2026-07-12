@@ -11,6 +11,15 @@ const login = async (req, res, next) => {
   }
 };
 
+const register = async (req, res, next) => {
+  try {
+    const data = await authService.register(req.body);
+    successResponse(res, data, 201);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
@@ -95,6 +104,7 @@ const deleteUser = async (req, res, next) => {
 
 module.exports = {
   login,
+  register,
   forgotPassword,
   getMe,
   createUser,

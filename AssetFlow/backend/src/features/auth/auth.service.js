@@ -34,6 +34,26 @@ const login = async (email, password) => {
   return { user: userWithoutPassword, token };
 };
 
+const resolveDepartmentId = async (department) => {
+  if (department === undefined || department === null || department === '') {
+    return null;
+  }
+
+  if (/^\d+$/.test(String(department))) {
+    const deptResult = await query('SELECT id FROM departments WHERE id = $1', [Number(department)]);
+    if (deptResult.rows.length === 0) {
+      throw new NotFoundError('Invalid department');
+    }
+    return Number(department);
+  }
+
+  const deptResult = await query('SELECT id FROM departments WHERE LOWER(name) = LOWER($1)', [department]);
+  if (deptResult.rows.length === 0) {
+    throw new NotFoundError('Invalid department');
+  }
+  return deptResult.rows[0].id;
+};
+
 const forgotPassword = async (email) => {
   // In a real app, generate a reset token and send an email
   return true;
@@ -42,12 +62,12 @@ const forgotPassword = async (email) => {
 // --- USER MANAGEMENT ---
 
 const createUser = async (data) => {
-  const { name, email, password, role, department_id } = data;
-  
-  // Validate department exists
-  const deptResult = await query('SELECT id FROM departments WHERE id = $1', [department_id]);
-  if (deptResult.rows.length === 0) {
-    throw new NotFoundError('Invalid department');
+  const { name, email, password, role } = data;
+  const departmentId = await resolveDepartmentId(data.department_id ?? data.department);
+
+  const requiresDepartment = role === 'department_head' || role === 'employee';
+  if (requiresDepartment && !departmentId) {
+    throw new ValidationError('Department is required for this account type');
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -58,7 +78,7 @@ const createUser = async (data) => {
       VALUES ($1, $2, $3, $4, $5)
       RETURNING id, name, email, role, department_id, status, created_at
     `;
-    const result = await query(insertQuery, [name, email, hashedPassword, role, department_id]);
+    const result = await query(insertQuery, [name, email, hashedPassword, role, departmentId]);
     return result.rows[0];
   } catch (err) {
     if (err.code === '23505') {
@@ -66,6 +86,12 @@ const createUser = async (data) => {
     }
     throw err;
   }
+};
+
+const register = async (data) => {
+  const user = await createUser(data);
+  const token = signToken({ id: user.id, role: user.role });
+  return { user, token };
 };
 
 const getUsers = async () => {
@@ -170,6 +196,7 @@ const deleteUser = async (targetId, requestorId) => {
 
 module.exports = {
   login,
+  register,
   forgotPassword,
   createUser,
   getUsers,

@@ -23,10 +23,8 @@ const DEPARTMENT_ROLES = [
 
 function getPasswordChecks(password) {
   return {
-    length: password.length >= 8,
-    case: /[a-z]/.test(password) && /[A-Z]/.test(password),
     number: /\d/.test(password),
-    special: /[^A-Za-z0-9]/.test(password),
+    length: password.length >= 6,
   };
 }
 
@@ -93,12 +91,13 @@ export default function RegisterScreen() {
 
     setSubmitting(true);
     try {
+      const departmentId = form.accountType === 'department' ? form.department : null;
       await signup({
         name: form.name,
         email: form.email,
         password: form.password,
         role: form.role,
-        department: form.department,
+        department_id: departmentId,
       });
       navigate('/dashboard');
     } catch (err) {
@@ -269,10 +268,8 @@ export default function RegisterScreen() {
 
             {/* Strength checklist */}
             <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
-              <StrengthItem ok={checks.length} label="8+ characters" />
-              <StrengthItem ok={checks.case} label="Uppercase & lowercase" />
+              <StrengthItem ok={checks.length} label="6+ characters" />
               <StrengthItem ok={checks.number} label="Number" />
-              <StrengthItem ok={checks.special} label="Special character" />
             </div>
           </div>
 

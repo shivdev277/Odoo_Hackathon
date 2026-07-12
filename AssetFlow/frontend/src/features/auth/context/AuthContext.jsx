@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { getProfile, login as loginRequest } from '../api/authApi';
+import { getProfile, login as loginRequest, register as registerRequest } from '../api/authApi';
 
 export const AuthContext = createContext();
 
@@ -38,13 +38,25 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
+  const signup = async (credentials) => {
+    const data = await registerRequest(credentials);
+
+    if (!data?.token || !data?.user) {
+      throw new Error('Account creation failed. Please try again.');
+    }
+
+    localStorage.setItem('token', data.token);
+    setUser(data.user);
+    return data;
+  };
+
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );

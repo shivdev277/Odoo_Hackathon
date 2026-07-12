@@ -6,12 +6,14 @@ const authorize = require('../../middlewares/rbac.middleware');
 const { 
   validateLogin, 
   validateForgotPassword, 
+  validateRegister,
   validateCreateUser, 
   validateUpdateRole 
 } = require('./auth.validation');
 
 // --- Auth Routes ---
 router.post('/login', validateLogin, authController.login);
+router.post('/register', validateRegister, authController.register);
 router.post('/forgot-password', validateForgotPassword, authController.forgotPassword);
 router.get('/me', authenticate, authController.getMe);
 
