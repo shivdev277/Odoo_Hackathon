@@ -73,7 +73,7 @@ export default function AllocationScreen() {
 
   if (!assetId) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-6 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
         <h1 className="text-xl font-bold text-[#061E29]">Allocation & Transfer</h1>
         <form onSubmit={handleSearch} className="flex max-w-md gap-2">
           <div className="relative flex-1">
@@ -114,7 +114,7 @@ export default function AllocationScreen() {
   if (error) return <ErrorState message={error} onRetry={() => setSearchParams({ assetId })} />;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
       <h1 className="text-xl font-bold text-[#061E29]">
         {allocation?.assetTag} — {allocation?.assetName}
       </h1>

@@ -51,7 +51,7 @@ export default function AuditScreen() {
   const flaggedCount = (audit.items || []).filter((i) => i.verification === 'missing' || i.verification === 'damaged').length;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
       <h1 className="text-xl font-bold text-[#061E29]">Asset Audit</h1>
 
       <div className="rounded-lg border border-gray-200 bg-[#F3F4F4] px-4 py-3 text-sm text-[#061E29]">

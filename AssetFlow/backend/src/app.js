@@ -51,14 +51,27 @@ const activityLogRoutes = require('./features/activityLogs/activityLogs.routes')
 const notificationRoutes = require('./features/notifications/notifications.routes');
 const bookingRoutes = require('./features/bookings/booking.routes');
 const assetsRoutes = require('./features/assets/assets.routes');
+const allocationRoutes = require('./features/allocation/allocation.routes');
+const transferRoutes = require('./features/allocation/transfer.routes');
+const maintenanceRoutes = require('./features/maintenance/maintenance.routes');
+const auditRoutes = require('./features/audit/audit.routes');
 const orgRoutes    = require('./features/org/org.routes');
+
 
 app.use('/api/auth',   authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/activity-logs', activityLogRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/assets', assetsRoutes);
+
+app.use('/api/audits', auditRoutes);
+app.use('/api/v1/audit-cycles', auditRoutes);
 app.use('/api/org',   orgRoutes);
+app.use('/api/allocations', allocationRoutes);
+app.use('/api/transfer-requests', transferRoutes);
+app.use('/api/maintenance', maintenanceRoutes);
+
+
 app.use('/api/bookings', bookingRoutes);
 
 app.get('/api/health', (req, res) => {
